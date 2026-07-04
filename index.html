@@ -1,0 +1,43 @@
+import os
+from PIL import Image, ImageDraw, ImageFont
+
+def draw_number():
+    input_folder = "./하수구사진"
+    output_folder = "./하수구사진_완성"
+    
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+        
+    text = "[문의전화] 010-5506-0040"
+    
+    for file in os.listdir(input_folder):
+        if file.lower().endswith(('.jpg', '.jpeg', '.png')):
+            img = Image.open(os.path.join(input_folder, file)).convert("RGB")
+            draw = ImageDraw.Draw(img)
+            
+            # 글자 크기 및 배치 자동 최적화
+            width, height = img.size
+            font_size = int(width * 0.05)
+            
+            try:
+                font = ImageFont.truetype("C:/Windows/Fonts/malgun.ttf", font_size)
+            except:
+                font = ImageFont.load_default()
+                
+            # 중앙 투명 띠 및 글자 쓰기
+            bbox = draw.textbbox((0, 0), text, font=font)
+            w, h = bbox[2] - bbox[0], bbox[3] - bbox[1]
+            
+            x = (width - w) // 2
+            y = (height - h) // 2 # 사진 정중앙 배치
+            
+            # 검은색 가독성 배경 띠
+            draw.rectangle([0, y - 20, width, y + h + 20], fill=(0, 0, 0))
+            # 노란색 큰 글씨
+            draw.text((x, y), text, font=font, fill=(255, 230, 0))
+            
+            img.save(os.path.join(output_folder, "광고배너.jpg"), "JPEG", quality=95)
+            print("▶ 번호 합성 완료! '하수구사진_완성' 폴더를 확인하세요.")
+
+if __name__ == "__main__":
+    draw_number()
